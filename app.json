@@ -24,6 +24,11 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "packagerOpts": {
+      "assetExts": [
+        "obj"
+      ]
     }
   }
 }
