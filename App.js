@@ -1,6 +1,6 @@
 import { GLView } from 'expo';
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView } from 'react-native';
+import { View, StyleSheet, Text, TextInput, PanResponder, Animated } from 'react-native';
 import * as THREE from "three";
 import ExpoTHREE from 'expo-three';
 
@@ -9,14 +9,41 @@ console.disableYellowBox = true;
 export default class App extends React.Component {
   constructor(props){
     super(props);
-    this.state = { MeshXValue: '1', MeshYValue: '1', MeshZValue: '1'};
+    this.state = {
+      pan: new Animated.ValueXY(),
+      MeshXValue: '1', MeshYValue: '1', MeshZValue: '1'
+    };
   }
+  componentWillMount() {
+    this._val = { x:0, y:0 };
+    this.state.pan.addListener((value) => this._val = value);
+    this.panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: (e, gesture) => true,
+      onPanResponderGrant: (e, gesture) => {
+        this.state.pan.setOffset({
+          x: this._val.x,
+          y: this._val.y
+        });
+        this.state.pan.setValue({ x:0, y:0});
+      },
+      onPanResponderMove: Animated.event([
+        null,
+        { dx: this.state.pan.x, dy: this.state.pan.y }
+      ])
+    });
+  }
+
   render() {
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
-        <GLView style={{ flex: 4 }}
-          onContextCreate={this._onGLContextCreate}
-        />
+        <Animated.View
+          {...this.panResponder.panHandlers}
+          style={{ flex:4, transform: this.state.pan.getTranslateTransform() }}
+        >
+          <GLView style={{ flex: 1 }}
+            onContextCreate={this._onGLContextCreate}
+          />
+        </Animated.View>
         <View style={styles.textview}>
           <View style={styles.text}>
             <Text style={styles.textfont}>meshscalax:</Text>
