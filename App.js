@@ -18,7 +18,7 @@ export default class App extends React.Component {
   }
   render() {
     return (
-      <View style={{ flex: 1, flexDirection: 'column' }}>
+      <View style={{ flex: 1, flexDirection: 'column', backgroundColor:'black' }}>
         <TouchableOpacity style={{ flex: 1 }}
           onPress={this._setonPressFlag}
         >
@@ -26,9 +26,9 @@ export default class App extends React.Component {
             onContextCreate={this._onGLContextCreate}
           />
         </TouchableOpacity>
-        <Button
+        <TouchableOpacity
+          style={styles.setMaterialButton}
           onPress={this._setMaterial}
-          title="button"
         />
       </View>
     )
@@ -73,6 +73,7 @@ export default class App extends React.Component {
     this.setState({onPressFlag: 'true'});
   };
   _setMaterial = () => {
+    alert("a");
     this.setState({
       materialX:data.block[2].x,
       materialY:data.block[2].y,
@@ -82,4 +83,13 @@ export default class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  setMaterialButton: {
+    width: 50,
+    height: 50,
+    borderRadius:100,
+    backgroundColor: 'white',
+    position:'absolute',
+    bottom:50,
+    right:50
+  }
 });
