@@ -1,8 +1,9 @@
 import { GLView } from 'expo';
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TextInput, PanResponder, Animated } from 'react-native';
+import { View, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
 import * as THREE from "three";
 import ExpoTHREE from 'expo-three';
+import material from './src/containers/material.js';
 
 console.disableYellowBox = true;
 
@@ -10,123 +11,63 @@ export default class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      pan: new Animated.ValueXY(),
-      MeshXValue: '1', MeshYValue: '1', MeshZValue: '1'
+      onPressFlag: 'false', onPressCount: 0
     };
   }
-  componentWillMount() {
-    this._val = { x:0, y:0 };
-    this.state.pan.addListener((value) => this._val = value);
-    this.panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (e, gesture) => true,
-      onPanResponderGrant: (e, gesture) => {
-        this.state.pan.setOffset({
-          x: this._val.x,
-          y: this._val.y
-        });
-        this.state.pan.setValue({ x:0, y:0});
-      },
-      onPanResponderMove: Animated.event([
-        null,
-        { dx: this.state.pan.x, dy: this.state.pan.y }
-      ])
-    });
-  }
-
   render() {
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
-        <Animated.View
-          {...this.panResponder.panHandlers}
-          style={{ flex:4, transform: this.state.pan.getTranslateTransform() }}
+        <TouchableOpacity style={{ flex: 1 }}
+          onPress={this._onPress}
         >
           <GLView style={{ flex: 1 }}
             onContextCreate={this._onGLContextCreate}
           />
-        </Animated.View>
-        <View style={styles.textview}>
-          <View style={styles.text}>
-            <Text style={styles.textfont}>meshscalax:</Text>
-            <TextInput style={{ backgroundColor: '#dddddd' }}
-              value={this.state.MeshXValue}
-              onChangeText={this._handleXValueChange}
-            />
-          </View>
-          <View style={styles.text}>
-            <Text style={styles.textfont}>meshscalay:</Text>
-            <TextInput style={{ backgroundColor: '#dddddd' }}
-              value={this.state.MeshYValue}
-              onChangeText={this._handleYValueChange}
-            />
-          </View>
-          <View style={styles.text}>
-            <Text style={styles.textfont}>meshscalaz:</Text>
-            <TextInput style={{ backgroundColor: '#dddddd' }}
-              value={this.state.MeshZValue}
-              onChangeText={this._handleZValueChange}
-            />
-          </View>
-        </View>
+        </TouchableOpacity>
       </View>
     )
   }
-
-  _handleXValueChange = MeshXValue => {
-    this.setState({ MeshXValue });
-  };
-  _handleYValueChange = MeshYValue => {
-    this.setState({ MeshYValue });
-  };
-  _handleZValueChange = MeshZValue => {
-    this.setState({ MeshZValue });
-  };
 
   _onGLContextCreate = async (gl) => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75, gl.drawingBufferWidth / gl.drawingBufferHeight, 0.1, 1000
     );
-    camera.position.x = 5;
-    camera.position.y = 5;
-    camera.position.z = 10;
+    camera.position.x = 8;
+    camera.position.y = 8;
+    camera.position.z = 8;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     const renderer = ExpoTHREE.createRenderer({ gl });
     renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
 
-    const floorgeometry = new THREE.BoxGeometry(10, 0.1, 10);
+    const floorgeometry = new THREE.BoxGeometry(30, 1, 30);
     const floormaterial = new THREE.MeshNormalMaterial({ color: 0x00ff00 });
     const floor = new THREE.Mesh( floorgeometry, floormaterial );
     scene.add(floor);
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshNormalMaterial({ color: 0x00ff00 });
-    const mesh = new THREE.Mesh( geometry, material );
-    scene.add(mesh);
-
+    floor.position.y = -1;
 
     const animate = () => {
       requestAnimationFrame(animate);
-      mesh.scale.set(this.state.MeshXValue,this.state.MeshYValue,this.state.MeshZValue);
-      mesh.rotation.x += 0.00;
-      mesh.rotation.y += 0.00;
       renderer.render(scene, camera);
+      if(this.state.onPressFlag === 'true'){
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshNormalMaterial({ color: 0x00ff00 });
+        const mesh = new THREE.Mesh( geometry, material );
+        scene.add(mesh);
+        this.state.onPressCount += 1;
+        mesh.position.y = this.state.onPressCount;
+        this.setState({onPressFlag: 'false'});
+      }
       gl.endFrameEXP();
     }
     animate();
   };
+
+  _onPress = async (gl) => {
+    this.setState({onPressFlag: 'true'});
+
+  };
 }
 
 const styles = StyleSheet.create({
-  textview: {
-    flex: 1,
-    backgroundColor: '#eeeeee',
-  },
-  text: {
-    flex:1,
-    flexDirection:'row',
-    alignItems: 'center',
-    justifyContent:'center',
-  },
-  textfont: {
-    fontSize:20
-  }
 });
