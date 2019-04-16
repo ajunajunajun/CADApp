@@ -1,6 +1,6 @@
 import { GLView } from 'expo';
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TextInput, Button, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TextInput, Button, Animated, TouchableOpacity } from 'react-native';
 import * as THREE from "three";
 import ExpoTHREE from 'expo-three';
 
@@ -14,6 +14,7 @@ export default class App extends React.Component {
     this.state = {
       onPressFlag: 'false', onPressCount: 0,
       materialX: '', materialY: '',materialZ: '',
+      materialFormFlex: new Animated.Value(0), materialFormFlag: true,
     };
   }
   render() {
@@ -26,10 +27,12 @@ export default class App extends React.Component {
             onContextCreate={this._onGLContextCreate}
           />
         </TouchableOpacity>
+        <Animated.View style={[styles.materialForm,{flex: this.state.materialFormFlex}]}/>
         <TouchableOpacity
           style={styles.setMaterialButton}
-          onPress={this._setMaterial}
+          onPress={this._MaterialForm}
         />
+
       </View>
     )
   }
@@ -73,13 +76,28 @@ export default class App extends React.Component {
     this.setState({onPressFlag: 'true'});
   };
   _setMaterial = () => {
-    alert("a");
     this.setState({
       materialX:data.block[2].x,
       materialY:data.block[2].y,
       materialZ:data.block[2].z
     });
   };
+  _MaterialForm = () => {
+    if( this.state.materialFormFlag === true ){
+      Animated.timing(this.state.materialFormFlex,{
+        toValue: 0.3,
+        duration: 100,
+      }).start();
+      this.setState({materialFormFlag:false});
+    } else {
+      Animated.timing(this.state.materialFormFlex,{
+        toValue: 0,
+        duration: 100,
+      }).start();
+      this.setState({materialFormFlag:true});
+    }
+  };
+
 }
 
 const styles = StyleSheet.create({
@@ -90,6 +108,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     position:'absolute',
     bottom:50,
-    right:50
+    right:30
+  },
+  materialForm: {
+    backgroundColor:'lightgray'
   }
 });
