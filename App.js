@@ -1,6 +1,6 @@
 import { GLView } from 'expo';
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TextInput, Button, Animated, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TextInput, Button, ScrollView, Animated, TouchableOpacity } from 'react-native';
 import * as THREE from "three";
 import ExpoTHREE from 'expo-three';
 
@@ -18,6 +18,14 @@ export default class App extends React.Component {
     };
   }
   render() {
+    var Materials = [];
+    for(let i = 0; i < Object.keys(data['block']).length ; i++){
+      Materials.push(
+        <Text>
+          {data.block[i].id},{data.block[i].x},{data.block[i].y},{data.block[i].z}
+        </Text>
+      );
+    }
     return (
       <View style={{ flex: 1, flexDirection: 'column', backgroundColor:'black' }}>
         <TouchableOpacity style={{ flex: 1 }}
@@ -27,7 +35,11 @@ export default class App extends React.Component {
             onContextCreate={this._onGLContextCreate}
           />
         </TouchableOpacity>
-        <Animated.View style={[styles.materialForm,{flex: this.state.materialFormFlex}]}/>
+        <Animated.View style={[styles.materialForm,{flex: this.state.materialFormFlex}]}>
+          <ScrollView style={{flex:13}}>
+            {Materials}
+          </ScrollView>
+        </Animated.View>
         <TouchableOpacity
           style={styles.setMaterialButton}
           onPress={this._MaterialForm}
