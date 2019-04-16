@@ -1,9 +1,10 @@
 import { GLView } from 'expo';
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TextInput, Button, TouchableOpacity } from 'react-native';
 import * as THREE from "three";
 import ExpoTHREE from 'expo-three';
-import material from './src/containers/material.js';
+
+import data from './src/containers/materiallist.json';
 
 console.disableYellowBox = true;
 
@@ -11,19 +12,24 @@ export default class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      onPressFlag: 'false', onPressCount: 0
+      onPressFlag: 'false', onPressCount: 0,
+      materialX: '', materialY: '',materialZ: '',
     };
   }
   render() {
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
         <TouchableOpacity style={{ flex: 1 }}
-          onPress={this._onPress}
+          onPress={this._setonPressFlag}
         >
           <GLView style={{ flex: 1 }}
             onContextCreate={this._onGLContextCreate}
           />
         </TouchableOpacity>
+        <Button
+          onPress={this._setMaterial}
+          title="button"
+        />
       </View>
     )
   }
@@ -50,7 +56,7 @@ export default class App extends React.Component {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
       if(this.state.onPressFlag === 'true'){
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const geometry = new THREE.BoxGeometry(this.state.materialX, this.state.materialY, this.state.materialZ);
         const material = new THREE.MeshNormalMaterial({ color: 0x00ff00 });
         const mesh = new THREE.Mesh( geometry, material );
         scene.add(mesh);
@@ -63,9 +69,15 @@ export default class App extends React.Component {
     animate();
   };
 
-  _onPress = async (gl) => {
+  _setonPressFlag = () => {
     this.setState({onPressFlag: 'true'});
-
+  };
+  _setMaterial = () => {
+    this.setState({
+      materialX:data.block[2].x,
+      materialY:data.block[2].y,
+      materialZ:data.block[2].z
+    });
   };
 }
 
