@@ -86,20 +86,28 @@ export default class App extends React.Component {
     const camera = new THREE.PerspectiveCamera(
       75, gl.drawingBufferWidth / gl.drawingBufferHeight, 0.1, 1000
     );
-    camera.position.z = 5;
+    camera.position.x = 5;
+    camera.position.y = 5;
+    camera.position.z = 10;
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
     const renderer = ExpoTHREE.createRenderer({ gl });
     renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
 
+    const floorgeometry = new THREE.BoxGeometry(10, 0.1, 10);
+    const floormaterial = new THREE.MeshNormalMaterial({ color: 0x00ff00 });
+    const floor = new THREE.Mesh( floorgeometry, floormaterial );
+    scene.add(floor);
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshNormalMaterial({ color: 0x00ff00 });
     const mesh = new THREE.Mesh( geometry, material );
     scene.add(mesh);
 
+
     const animate = () => {
       requestAnimationFrame(animate);
       mesh.scale.set(this.state.MeshXValue,this.state.MeshYValue,this.state.MeshZValue);
-      mesh.rotation.x += 0.01;
-      mesh.rotation.y += 0.02;
+      mesh.rotation.x += 0.00;
+      mesh.rotation.y += 0.00;
       renderer.render(scene, camera);
       gl.endFrameEXP();
     }
