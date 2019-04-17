@@ -21,9 +21,13 @@ export default class App extends React.Component {
     var Materials = [];
     for(let i = 0; i < Object.keys(data['block']).length ; i++){
       Materials.push(
-        <Text>
-          {data.block[i].id},{data.block[i].x},{data.block[i].y},{data.block[i].z}
-        </Text>
+        <TouchableOpacity style={{flex:1}}
+          onPress={ () => this._setMaterial(i)}
+        >
+          <Text style={styles.materialsText}>
+            id:{data.block[i].id},X:{data.block[i].x},Y:{data.block[i].y},Z:{data.block[i].z}
+          </Text>
+        </TouchableOpacity>
       );
     }
     return (
@@ -87,11 +91,12 @@ export default class App extends React.Component {
   _setonPressFlag = () => {
     this.setState({onPressFlag: 'true'});
   };
-  _setMaterial = () => {
+  _setMaterial = i => {
+    alert("changed");
     this.setState({
-      materialX:data.block[2].x,
-      materialY:data.block[2].y,
-      materialZ:data.block[2].z
+      materialX:data.block[i].x,
+      materialY:data.block[i].y,
+      materialZ:data.block[i].z
     });
   };
   _MaterialForm = () => {
@@ -124,5 +129,8 @@ const styles = StyleSheet.create({
   },
   materialForm: {
     backgroundColor:'lightgray'
+  },
+  materialsText: {
+    fontSize:30
   }
 });
