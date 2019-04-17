@@ -1,6 +1,7 @@
 import { GLView } from 'expo';
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TextInput, Button, ScrollView, Animated, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TextInput, Button, ScrollView,
+   Animated, TouchableOpacity } from 'react-native';
 import * as THREE from "three";
 import ExpoTHREE from 'expo-three';
 
@@ -15,11 +16,12 @@ export default class App extends React.Component {
       onPressFlag: 'false', onPressCount: 0,
       materialX: '', materialY: '',materialZ: '',
       materialFormLeft: new Animated.Value(100), materialFormFlag: true,
+      translateFlag: true
     };
     this.materialFormLeftInterpolate = this.state.materialFormLeft.interpolate({
       inputRange: [20,100],
       outputRange: ['20%','100%']
-    })
+    });
   }
   render() {
     var Materials = [];
@@ -36,13 +38,9 @@ export default class App extends React.Component {
     }
     return (
       <View style={{ flex: 1, flexDirection: 'column', backgroundColor:'black' }}>
-        <TouchableOpacity style={{ flex: 1 }}
-          onPress={this._setonPressFlag}
-        >
-          <GLView style={{ flex: 1 }}
-            onContextCreate={this._onGLContextCreate}
-          />
-        </TouchableOpacity>
+        <GLView style={{ flex: 1 ,backgroundColor:'black' }}
+          onContextCreate={this._onGLContextCreate}
+        />
         <Animated.View style={[styles.materialFormTest,{left: this.materialFormLeftInterpolate}]}>
           <ScrollView style={{flex:1}}>
             {Materials}
@@ -52,7 +50,10 @@ export default class App extends React.Component {
           style={styles.setMaterialButton}
           onPress={this._MaterialForm}
         />
-
+        <TouchableOpacity
+          style={styles.settranslateFlagButton}
+          onPress={this._changetranslateFlag}
+        />
       </View>
     )
   }
@@ -69,7 +70,7 @@ export default class App extends React.Component {
     const renderer = ExpoTHREE.createRenderer({ gl });
     renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
 
-    const floorgeometry = new THREE.BoxGeometry(30, 1, 30);
+    const floorgeometry = new THREE.BoxGeometry(15, 1, 15);
     const floormaterial = new THREE.MeshNormalMaterial({ color: 0x00ff00 });
     const floor = new THREE.Mesh( floorgeometry, floormaterial );
     scene.add(floor);
@@ -92,16 +93,14 @@ export default class App extends React.Component {
     animate();
   };
 
-  _setonPressFlag = () => {
-    this.setState({onPressFlag: 'true'});
-  };
   _setMaterial = i => {
-    alert("changed");
     this.setState({
       materialX:data.block[i].x,
       materialY:data.block[i].y,
-      materialZ:data.block[i].z
+      materialZ:data.block[i].z,
+      onPressFlag: 'true'
     });
+
   };
   _MaterialForm = () => {
     if( this.state.materialFormFlag === true ){
@@ -118,7 +117,14 @@ export default class App extends React.Component {
       this.setState({materialFormFlag:true});
     }
   };
-
+  _changetranslateFlag = () => {
+    if( this.state.translateFlag === true ){
+      this.setState({translateFlag:false});
+    } else {
+      this.setState({translateFlag:true});
+    }
+    alert(this.state.translateFlag);
+  };
 }
 
 const styles = StyleSheet.create({
@@ -129,6 +135,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     position:'absolute',
     bottom:'5%',
+    right:30
+  },
+  settranslateFlagButton: {
+    width: 50,
+    height: 50,
+    borderRadius:100,
+    backgroundColor: 'white',
+    position:'absolute',
+    top:'5%',
     right:30
   },
   materialForm: {
