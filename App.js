@@ -58,9 +58,9 @@ export default class App extends React.Component {
     const camera = new THREE.PerspectiveCamera(
       75, gl.drawingBufferWidth / gl.drawingBufferHeight, 0.1, 1000
     );
-    camera.position.x = 8;
-    camera.position.y = 8;
-    camera.position.z = 8;
+    camera.position.x = 10;
+    camera.position.y = 10;
+    camera.position.z = 20;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     const renderer = ExpoTHREE.createRenderer({ gl });
     renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
