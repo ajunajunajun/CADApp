@@ -14,8 +14,12 @@ export default class App extends React.Component {
     this.state = {
       onPressFlag: 'false', onPressCount: 0,
       materialX: '', materialY: '',materialZ: '',
-      materialFormFlex: new Animated.Value(0), materialFormFlag: true,
+      materialFormLeft: new Animated.Value(100), materialFormFlag: true,
     };
+    this.materialFormLeftInterpolate = this.state.materialFormLeft.interpolate({
+      inputRange: [20,100],
+      outputRange: ['20%','100%']
+    })
   }
   render() {
     var Materials = [];
@@ -39,8 +43,8 @@ export default class App extends React.Component {
             onContextCreate={this._onGLContextCreate}
           />
         </TouchableOpacity>
-        <Animated.View style={[styles.materialForm,{flex: this.state.materialFormFlex}]}>
-          <ScrollView style={{flex:13}}>
+        <Animated.View style={[styles.materialFormTest,{left: this.materialFormLeftInterpolate}]}>
+          <ScrollView style={{flex:1}}>
             {Materials}
           </ScrollView>
         </Animated.View>
@@ -101,14 +105,14 @@ export default class App extends React.Component {
   };
   _MaterialForm = () => {
     if( this.state.materialFormFlag === true ){
-      Animated.timing(this.state.materialFormFlex,{
-        toValue: 0.3,
+      Animated.spring(this.state.materialFormLeft,{
+        toValue: 20,
         duration: 100,
       }).start();
       this.setState({materialFormFlag:false});
     } else {
-      Animated.timing(this.state.materialFormFlex,{
-        toValue: 0,
+      Animated.timing(this.state.materialFormLeft,{
+        toValue: 100,
         duration: 100,
       }).start();
       this.setState({materialFormFlag:true});
@@ -124,11 +128,18 @@ const styles = StyleSheet.create({
     borderRadius:100,
     backgroundColor: 'white',
     position:'absolute',
-    bottom:50,
+    bottom:'5%',
     right:30
   },
   materialForm: {
     backgroundColor:'lightgray'
+  },
+  materialFormTest: {
+    position:'absolute',
+    backgroundColor:'lightgray',
+    width:'100%',
+    height:'20%',
+    bottom:0,
   },
   materialsText: {
     fontSize:30
